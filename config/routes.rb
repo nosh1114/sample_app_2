@@ -2,5 +2,7 @@ Rails.application.routes.draw do
   # コントローラー名/メソッド
   get 'static_pages/home'
   get 'static_pages/help'
-  root "hello#index"
+  get 'static_pages/about'
+  get 'static_pages/contact'
+  root 'hello#index'
 end

@@ -9,4 +9,8 @@ class StaticPagesController < ApplicationController
     # roots / rootは、ルートパスを指します。
     # routes / routeは、URLとコントローラーのアクションを結びつけるものです。
   end
+
+  def about; end
+  def contact;
+  end
 end

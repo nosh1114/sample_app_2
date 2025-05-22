@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sample App</title>
+    <%# ここをタイトルを動的にする。 %>
+    <title><%= yield(:title) %> | Ruby on Rails Tutorial Sample App</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -11,6 +13,7 @@
   </head>
 
   <body>
+    <%# ここでyieldでコンテンツを表示されるのは、application_controller.rb %>
     <%= yield %>
   </body>
 </html>

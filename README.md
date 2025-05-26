@@ -33,3 +33,6 @@ $ rails test
 
 詳しくは、[*Ruby on Rails チュートリアル*](https://railstutorial.jp/)
 を参考にしてください。
+
+
+binding.breakでブレイクポイントとする。

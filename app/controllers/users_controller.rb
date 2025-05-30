@@ -11,7 +11,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      binding.break
       flash[:success] = 'Welcome to the sameple app!いらっしゃい！'
       # redirect_to user_url(@user)やuser_path(@user)と同じ
       redirect_to @user

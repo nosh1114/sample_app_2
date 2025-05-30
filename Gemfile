@@ -28,6 +28,10 @@ group :development do
   gem 'web-console', '4.2.0'
 end
 
+group :production do
+  gem 'pg', '1.3.5'
+end
+
 group :test do
   gem 'capybara',                 '3.38.0'
   gem 'guard',                    '2.18.0'

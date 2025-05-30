@@ -5,14 +5,21 @@
     <title><%= full_title(yield(:title)) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="utf-8">
-    <%= render 'layouts/rails_default' %>
+    <%= render 'shared/rails_default' %>
   </head>
 
   <body>
-    <%= render 'layouts/header' %>
+    <%= render 'shared/header' %>
     <div class="container">
+      <% flash.each do |message_type, message|%>
+       <div class="alert alert-<%= message_type %>">
+        <%=message%>
+       </div>
+      <% end %>
       <%= yield %>
-      <%= render 'layouts/footer' %>
+      <%= render 'shared/footer' %>
+      <%# 環境がdevelopment環境のみでdebug情報を表示 %>
+      <%= debug(params) if Rails.env.development? %>
     </div>
   </body>
 </html>

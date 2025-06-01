@@ -11,4 +11,13 @@ class User < ApplicationRecord
   # 以下のものは、パスワードのセキュリティを強化するために使用される。
   has_secure_password
   validates :password, presence: true, length: { minimum: 8 }
+
+  def User.digest(string)
+    # costとは、BCryptのハッシュ化のコストを設定するために使用される。
+    # もしmin_costなら少し抑えめにする。
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : 
+                                                  BCrypt::Engine.cost
+    # costは、ハッシュ化のコストを設定するために使用される。
+    BCrypt::Password.create(string, cost: cost)
+  end
 end

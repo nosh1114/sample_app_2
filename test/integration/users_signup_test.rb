@@ -28,9 +28,8 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
         password_confirmation: 'validpassword'
       } }
     end
-    # テスト環境では、
     follow_redirect!
     assert_template 'users/show'
-    assert_response :success
+    assert is_logged_in?
   end
 end

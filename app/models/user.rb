@@ -1,6 +1,10 @@
 class User < ApplicationRecord
   # saveする前に
   # 右辺のselfは省略できる
+  # なぜこれをするのかというと、平文を保存するのではなく、
+  # ハッシュ化されたパスワードを保存するため。
+  attr_accessor :remember_token
+
   before_save { self.email = email.downcase }
   validates :name,  presence: true, length: { maximum: 50 }
   # 以下の正規表現は、メールアドレスの形式を検証するために使用される。
@@ -12,12 +16,41 @@ class User < ApplicationRecord
   has_secure_password
   validates :password, presence: true, length: { minimum: 8 }
 
-  def User.digest(string)
+  def self.digest(string)
     # costとは、BCryptのハッシュ化のコストを設定するために使用される。
     # もしmin_costなら少し抑えめにする。
-    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : 
-                                                  BCrypt::Engine.cost
+    cost = if ActiveModel::SecurePassword.min_cost
+             BCrypt::Engine::MIN_COST
+           else
+             BCrypt::Engine.cost
+           end
     # costは、ハッシュ化のコストを設定するために使用される。
     BCrypt::Password.create(string, cost: cost)
+  end
+
+  def self.new_token
+    SecureRandom.urlsafe_base64
+  end
+
+  def remember
+    self.remember_token = User.new_token
+    # ここでuserのバリデーションを行わないようにするためにupdate_attributeを使用する。
+    update_attribute(:remember_digest, User.digest(remember_token))
+  end
+
+    # 渡されたトークンがダイジェストと一致したらtrueを返す
+    # 
+  def authenticated?(remember_token)
+    return false if remember_digest.nil?
+    # BCrypt::Password.newは、ハッシュ化されたパスワードを復号化するために使用される。
+    # userにはremember_digestが保存されているので、ここに呼び出すことができる。
+    # そして、remember_tokenがそのハッシュ化されたパスワードと一致するかどうかを確認する。
+    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  end
+
+  # ユーザーのログイン情報を破棄する
+  # ログアウト時に削除する。
+  def forget
+    update_attribute(:remember_digest, nil)
   end
 end

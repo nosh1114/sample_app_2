@@ -5,6 +5,7 @@ class SessionsController < ApplicationController
   # POSTリクエスト
   def create
     # userは存在しない場合もある。nilガードをチェックするべき。
+    # sessionが入っていなければこうなる。
     user = User.find_by(email: params[:session][:email])
     # 片方失敗したらだめ。左がダメになれば、即座にfalse
     if user && user.authenticate(params[:session][:password])
@@ -12,7 +13,15 @@ class SessionsController < ApplicationController
       # セッションをリセットする。セッションハイジャック対策。
       # セッションハイジャックとは、セッションIDを盗まれて、他人にログインされること。
       reset_session # ログインの直前に必ずこれを書くこと
-      log_in(user)
+      # 永続的セッションのためにユーザーをデータベースに記憶する
+      # forgetがある理由としては、別の端末からログインして、その際remember_meを外したとすると、
+      # 端末Aでは、remembertokenAを持っている。端末Bでは、remembertokenはない。
+      # 質問
+      # ここで、forgetをするのは、端末AにもRememberMeがoffになったというようにするため。
+      # current_userを取得する際の仕様がremember_digestがない時はログインできないようにしている仕様のため。
+      binding.break
+      params[:session][:remember_me] == '1' ? remember(user) : forget(user)      
+      log_in user
       redirect_to user
     else
       # リダイレクト後は消える。

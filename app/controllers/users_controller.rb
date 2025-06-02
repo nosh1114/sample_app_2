@@ -11,7 +11,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      flash[:success] = 'Welcome to the sameple app!いらっしゃい！'
+      reset_session
+      log_in @user
+      flash.now[:success] = 'Welcome to the sameple app!いらっしゃい！'
       # redirect_to user_url(@user)やuser_path(@user)と同じ
       redirect_to @user
     else

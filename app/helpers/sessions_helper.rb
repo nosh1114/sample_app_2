@@ -23,6 +23,7 @@ module SessionsHelper
       @current_user ||= User.find_by(id: user_id) 
     # cookiesに暗号化されたuser_idがあればこちらの処理
     elsif (user_id = cookies.encrypted[:user_id])
+      raise
       @current_user = login_with_remember_token(user_id)
     end
   end
@@ -30,7 +31,6 @@ module SessionsHelper
   def login_with_remember_token(user_id)
     user = User.find_by(id: user_id)
     # userが存在していて、かつcookieのパスワードがあればuserとしてlogin
-    # 
     if user && user.authenticated?(:remember, cookies[:remember_token])
       log_in user
       user

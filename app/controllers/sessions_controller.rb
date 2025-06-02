@@ -19,7 +19,7 @@ class SessionsController < ApplicationController
       # 質問
       # ここで、forgetをするのは、端末AにもRememberMeがoffになったというようにするため。
       # current_userを取得する際の仕様がremember_digestがない時はログインできないようにしている仕様のため。
-      binding.break
+
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)      
       log_in user
       redirect_to user

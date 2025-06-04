@@ -14,7 +14,7 @@ class User < ApplicationRecord
                     uniqueness: true
   # 以下のものは、パスワードのセキュリティを強化するために使用される。
   has_secure_password
-  validates :password, presence: true, length: { minimum: 8 }
+  validates :password, presence: true, length: { minimum: 8 }, allow_nil: true
 
   def self.digest(string)
     # costとは、BCryptのハッシュ化のコストを設定するために使用される。
@@ -33,9 +33,15 @@ class User < ApplicationRecord
   end
 
   def remember
+    # attr_accessorで定義したremember_tokenに値をセットする。
     self.remember_token = User.new_token
     # ここでuserのバリデーションを行わないようにするためにupdate_attributeを使用する。
     update_attribute(:remember_digest, User.digest(remember_token))
+    remember_digest
+  end
+  # ここでremember_tokenが使えるのはattr_accessorで定義したから。
+  def session_token
+    remember_digest || remember
   end
 
     # 渡されたトークンがダイジェストと一致したらtrueを返す

@@ -12,17 +12,18 @@ class SessionsController < ApplicationController
       # ログイン成功
       # セッションをリセットする。セッションハイジャック対策。
       # セッションハイジャックとは、セッションIDを盗まれて、他人にログインされること。
-      reset_session # ログインの直前に必ずこれを書くこと
+      # reset_session
+      forwarding_url = session[:forwarding_url]
+      # ログインの直前に必ずこれを書くこと
       # 永続的セッションのためにユーザーをデータベースに記憶する
       # forgetがある理由としては、別の端末からログインして、その際remember_meを外したとすると、
       # 端末Aでは、remembertokenAを持っている。端末Bでは、remembertokenはない。
       # 質問
       # ここで、forgetをするのは、端末AにもRememberMeがoffになったというようにするため。
       # current_userを取得する際の仕様がremember_digestがない時はログインできないようにしている仕様のため。
-
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)      
       log_in user
-      redirect_to user
+      redirect_to forwarding_url || user
     else
       # リダイレクト後は消える。
       flash.now[:danger] = 'Invalid/email/password combination'

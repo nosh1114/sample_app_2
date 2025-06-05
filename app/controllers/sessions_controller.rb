@@ -13,17 +13,24 @@ class SessionsController < ApplicationController
       # セッションをリセットする。セッションハイジャック対策。
       # セッションハイジャックとは、セッションIDを盗まれて、他人にログインされること。
       # reset_session
-      forwarding_url = session[:forwarding_url]
-      # ログインの直前に必ずこれを書くこと
-      # 永続的セッションのためにユーザーをデータベースに記憶する
-      # forgetがある理由としては、別の端末からログインして、その際remember_meを外したとすると、
-      # 端末Aでは、remembertokenAを持っている。端末Bでは、remembertokenはない。
-      # 質問
-      # ここで、forgetをするのは、端末AにもRememberMeがoffになったというようにするため。
-      # current_userを取得する際の仕様がremember_digestがない時はログインできないようにしている仕様のため。
-      params[:session][:remember_me] == '1' ? remember(user) : forget(user)      
-      log_in user
-      redirect_to forwarding_url || user
+      if user.activated?
+        forwarding_url = session[:forwarding_url]
+        # ログインの直前に必ずこれを書くこと
+        # 永続的セッションのためにユーザーをデータベースに記憶する
+        # forgetがある理由としては、別の端末からログインして、その際remember_meを外したとすると、
+        # 端末Aでは、remembertokenAを持っている。端末Bでは、remembertokenはない。
+        # 質問
+        # ここで、forgetをするのは、端末AにもRememberMeがoffになったというようにするため。
+        # current_userを取得する際の仕様がremember_digestがない時はログインできないようにしている仕様のため。
+        params[:session][:remember_me] == '1' ? remember(user) : forget(user)      
+        log_in user
+        redirect_to forwarding_url || user
+      else
+        message  = "Account not activated. "
+        message += "Check your email for the activation link."
+        flash[:warning] = message
+        redirect_to root_url
+      end
     else
       # リダイレクト後は消える。
       flash.now[:danger] = 'Invalid/email/password combination'

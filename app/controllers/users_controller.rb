@@ -4,13 +4,14 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:destroy]
   # 新規
   def index
-    @users = User.paginate(page: params[:page])
+    @users = User.where(activated: true).paginate(page: params[:page])
     # @usersは、Userモデルの全てのレコードを取得します。
   end
 
   def show
     # @は、インスタンス変数と呼ばれ、ビューで使用できるようにするために必要です。
     @user = User.find(params[:id])
+    redirect_to root_url and return unless @user.activated?
   end
 
   def new
@@ -20,11 +21,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      reset_session
-      log_in @user
-      flash.now[:success] = 'Welcome to the sameple app!いらっしゃい！'
-      # redirect_to user_url(@user)やuser_path(@user)と同じ
-      redirect_to @user
+      @user.send_activation_email
+      flash[:info] = "Please check your email to activate your account."
+      redirect_to root_url
     else
       render 'new', status: :unprocessable_entity
     end

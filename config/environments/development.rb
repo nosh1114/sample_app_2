@@ -17,6 +17,10 @@ Rails.application.configure do
   # Enable server timing
   config.server_timing = true
 
+  host = 'localhost:3000'
+  # ローカル環境                  
+  config.action_mailer.default_url_options = { host: host, protocol: 'http' }
+
   # Add the following line to disable forgery_protection_origin_check
   config.action_controller.forgery_protection_origin_check = false
 

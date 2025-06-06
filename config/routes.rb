@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'password_resets/new'
+  get 'password_resets/edit'
   get 'sessions/new'
   get  '/signup', to: 'users#new'
   # /helpにGETリクエストが来たら、static_pagesコントローラーのhelpメソッドを実行
@@ -11,4 +13,6 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
   resources :users
   resources :account_activations, only: [:edit]
+  # login時、login後の内容変更時も必要。
+  resources :password_resets,     only: [:new, :create, :edit, :update]
 end

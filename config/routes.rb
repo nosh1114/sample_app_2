@@ -15,4 +15,6 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   # login時、login後の内容変更時も必要。
   resources :password_resets,     only: [:new, :create, :edit, :update]
+  resources :microposts, only: [:create, :destroy]
+  get '/microposts', to: 'static_pages#home'
 end

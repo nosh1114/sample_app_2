@@ -1,7 +1,10 @@
 class StaticPagesController < ApplicationController
   def home
-    # =>app/views/static_pages/home.html.erbが標準で表示される
-    # render ...とすると、指定できる。
+    if logged_in?
+      # micropost.newとしないのは、userとmicropostに紐づけるため。
+      @micropost  = current_user.microposts.build
+      @feed_items = current_user.feed.paginate(page: params[:page])
+    end
   end
 
   # app/views/コントローラー名/メソッド名.html.erb

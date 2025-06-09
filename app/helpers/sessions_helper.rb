@@ -36,6 +36,7 @@ module SessionsHelper
   end
 
   def current_user?(user)
+    # userがいる、userと今ログインしているのと一緒ですか？
     user && user == current_user
   end
 

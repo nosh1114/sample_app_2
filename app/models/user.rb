@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :microposts, dependent: :destroy
   # saveする前に
   # 右辺のselfは省略できる
   # なぜこれをするのかというと、平文を保存するのではなく、
@@ -15,7 +16,6 @@ class User < ApplicationRecord
   # 以下のものは、パスワードのセキュリティを強化するために使用される。
   has_secure_password
   validates :password, presence: true, length: { minimum: 8 }, allow_nil: true
-
   def self.digest(string)
     # costとは、BCryptのハッシュ化のコストを設定するために使用される。
     # もしmin_costなら少し抑えめにする。
@@ -83,6 +83,11 @@ class User < ApplicationRecord
 
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  def feed
+    # useridに対して紐づいているMicropostを取得する。
+    Micropost.where("user_id = ?", id)
   end
 
   private

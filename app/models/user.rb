@@ -1,5 +1,20 @@
 class User < ApplicationRecord
   has_many :microposts, dependent: :destroy
+  # classは、micropostsのクラスを指定する。
+  # 外部キーは、user_idを指定する。持っていることが前提。
+  # 私がフォローしている方ね
+  has_many :active_relationships, class_name:  "Relationship",
+                                  foreign_key: "follower_id",
+                                  dependent:   :destroy
+  # classは、Relationshipのクラス指定。
+  # 外部キーは、followed_idを指定する。外部キーとは、他のテーブルのIDを参照するためのカラム。
+  has_many :following, through: :active_relationships, source: :followed
+  has_many :passive_relationships, class_name: "Relationship",
+                                    foreign_key: "followed_id",
+                                    dependent: :destroy
+  # followingは、active_relationshipsを通じて、followedを参照する。
+  has_many :followers, through: :passive_relationships, source: :follower
+  # sourceは、follower
   # saveする前に
   # 右辺のselfは省略できる
   # なぜこれをするのかというと、平文を保存するのではなく、
@@ -85,9 +100,28 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
 
+  # ユーザーのステータスフィードを返す
   def feed
-    # useridに対して紐づいているMicropostを取得する。
-    Micropost.where("user_id = ?", id)
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id)
+  end
+
+    # ユーザーをフォローする
+  def follow(other_user)
+    # followingは配列である。
+    following << other_user unless self == other_user
+  end
+
+  # ユーザーをフォロー解除する
+  def unfollow(other_user)
+    following.delete(other_user)
+  end
+
+  # 現在のユーザーが他のユーザーをフォローしていればtrueを返す
+  def following?(other_user)
+    following.include?(other_user)
   end
 
   private

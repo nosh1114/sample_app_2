@@ -1,0 +1,8 @@
+<%# id = "follow_form"を以下に変える。 %>
+<%= turbo_stream.update "follow_form" do %>
+  <%= render partial: "users/unfollow" %>
+<% end %>
+<%# id followersを以下に変える。 %>
+<%= turbo_stream.update "followers" do %>
+  <%= @user.followers.count %>
+<% end %>

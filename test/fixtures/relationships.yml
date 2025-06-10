@@ -1,0 +1,18 @@
+# このように指定できるのは、relationship.rbの中で
+# belongs_to :follower, class_name: 'User'のように、
+# followerとfollowedの両方をUserモデルに関連付けているからです。
+one:
+  follower: michael
+  followed: lana
+
+two:
+  follower: michael
+  followed: malory
+
+three:
+  follower: lana
+  followed: michael
+
+four:
+  follower: archer
+  followed: michael
